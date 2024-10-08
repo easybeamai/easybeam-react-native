@@ -1,0 +1,24 @@
+{
+  "name": "easybeam-react-native",
+  "version": "1.0.0",
+  "description": "A React Native package for interacting with EasyBeam portals & reviews.",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "prepare": "npm run build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^22.7.5",
+    "typescript": "^5.6.2"
+  },
+  "dependencies": {
+    "react-native-sse": "^1.x.x"
+  },
+  "peerDependencies": {
+    "react-native": "*"
+  }
+}
