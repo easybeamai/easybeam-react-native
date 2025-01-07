@@ -18,6 +18,10 @@ export interface FilledVariables {
   [key: string]: string;
 }
 
+export interface UserSecrets {
+  [key: string]: string;
+}
+
 export interface ChatMessage {
   content: string;
   role: ChatRole;
@@ -61,14 +65,16 @@ export interface EasybeamService {
     messages: ChatMessage[],
     onNewResponse: (newMessage: ChatResponse) => void,
     onClose: () => void,
-    onError: (error: Error) => void
+    onError: (error: Error) => void,
+    userSecrets?: UserSecrets
   ): Promise<void>;
 
   getAgent(
     agentId: string,
     userId: string | undefined,
     filledVariables: FilledVariables,
-    messages: ChatMessage[]
+    messages: ChatMessage[],
+    userSecrets?: UserSecrets
   ): Promise<ChatResponse>;
 
   review(
@@ -191,13 +197,15 @@ export class Easybeam implements EasybeamService {
     messages: ChatMessage[],
     onNewResponse: (newMessage: ChatResponse) => void,
     onClose: () => void,
-    onError: (error: Error) => void
+    onError: (error: Error) => void,
+    userSecrets?: UserSecrets
   ): Promise<void> {
     const params = {
       variables: filledVariables,
       messages,
       stream: "true",
       userId,
+      userSecrets,
     };
 
     const handleError = (error: Error) => {
@@ -241,13 +249,15 @@ export class Easybeam implements EasybeamService {
     id: string,
     userId: string | undefined,
     filledVariables: FilledVariables,
-    messages: ChatMessage[]
+    messages: ChatMessage[],
+    userSecrets?: UserSecrets
   ): Promise<ChatResponse> {
     const params = {
       variables: filledVariables,
       messages,
       stream: "false",
       userId,
+      userSecrets,
     };
 
     const url = `${this.baseUrl}/${endpoint}/${id}`;
@@ -301,7 +311,8 @@ export class Easybeam implements EasybeamService {
     messages: ChatMessage[],
     onNewResponse: (newMessage: ChatResponse) => void,
     onClose: () => void,
-    onError: (error: Error) => void
+    onError: (error: Error) => void,
+    userSecrets?: UserSecrets
   ): Promise<void> {
     await this.streamEndpoint(
       "agent",
@@ -311,7 +322,8 @@ export class Easybeam implements EasybeamService {
       messages,
       onNewResponse,
       onClose,
-      onError
+      onError,
+      userSecrets
     );
   }
 
@@ -319,14 +331,16 @@ export class Easybeam implements EasybeamService {
     agentId: string,
     userId: string | undefined,
     filledVariables: FilledVariables,
-    messages: ChatMessage[]
+    messages: ChatMessage[],
+    userSecrets?: UserSecrets
   ): Promise<ChatResponse> {
     return await this.getEndpoint(
       "agent",
       agentId,
       userId,
       filledVariables,
-      messages
+      messages,
+      userSecrets
     );
   }
 

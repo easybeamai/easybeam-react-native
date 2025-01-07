@@ -1,6 +1,6 @@
 {
   "name": "easybeam-react-native",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "A React Native package for interacting with Easybeam agents, prompts and reviews",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
