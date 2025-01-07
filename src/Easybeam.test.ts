@@ -2,7 +2,7 @@
 import {
   Easybeam,
   EasyBeamConfig,
-  PortalResponse,
+  ChatResponse,
   ChatMessage,
   FilledVariables,
 } from "./Easybeam";
@@ -23,8 +23,8 @@ describe("Easybeam Class Tests", () => {
   let easybeam: Easybeam;
   const token = "test-token";
   const config: EasyBeamConfig = { token };
-  const portalId = "test-portal-id";
-  const workflowId = "test-workflow-id";
+  const promptId = "test-prompt-id";
+  const agentId = "test-agent-id";
   const userId = "test-user-id";
   const filledVariables: FilledVariables = { key: "value" };
   const messages: ChatMessage[] = [
@@ -45,9 +45,9 @@ describe("Easybeam Class Tests", () => {
     jest.clearAllMocks();
   });
 
-  describe("getPortal", () => {
-    it("should make a POST request and return PortalResponse", async () => {
-      const mockResponse: PortalResponse = {
+  describe("getPrompt", () => {
+    it("should make a POST request and return ChatResponse", async () => {
+      const mockResponse: ChatResponse = {
         newMessage: {
           content: "AI Response",
           role: "AI",
@@ -61,15 +61,15 @@ describe("Easybeam Class Tests", () => {
         json: jest.fn().mockResolvedValueOnce(mockResponse),
       });
 
-      const response = await easybeam.getPortal(
-        portalId,
+      const response = await easybeam.getPrompt(
+        promptId,
         userId,
         filledVariables,
         messages
       );
 
       expect(global.fetch).toHaveBeenCalledWith(
-        expect.stringContaining(`/portal/${portalId}`),
+        expect.stringContaining(`/prompt/${promptId}`),
         expect.objectContaining({
           method: "POST",
           headers: expect.objectContaining({
@@ -96,14 +96,14 @@ describe("Easybeam Class Tests", () => {
       });
 
       await expect(
-        easybeam.getPortal(portalId, userId, filledVariables, messages)
+        easybeam.getPrompt(promptId, userId, filledVariables, messages)
       ).rejects.toThrow(
-        `Failed to process POST request to https://api.easybeam.ai/v1/portal/${portalId}`
+        `Failed to process POST request to https://api.easybeam.ai/v1/prompt/${promptId}`
       );
     });
   });
 
-  describe("streamPortal", () => {
+  describe("streamPrompt", () => {
     it("should initiate an SSE connection and handle messages", async () => {
       const onNewResponse = jest.fn();
       const onClose = jest.fn();
@@ -118,8 +118,8 @@ describe("Easybeam Class Tests", () => {
         () => mockEventSourceInstance
       );
 
-      await easybeam.streamPortal(
-        portalId,
+      await easybeam.streamPrompt(
+        promptId,
         userId,
         filledVariables,
         messages,
@@ -129,7 +129,7 @@ describe("Easybeam Class Tests", () => {
       );
 
       expect(EventSource).toHaveBeenCalledWith(
-        `${easybeam["baseUrl"]}/portal/${portalId}`,
+        `${easybeam["baseUrl"]}/prompt/${promptId}`,
         expect.objectContaining({
           headers: expect.any(Object),
           body: JSON.stringify({
@@ -198,8 +198,8 @@ describe("Easybeam Class Tests", () => {
         () => mockEventSourceInstance
       );
 
-      await easybeam.streamPortal(
-        portalId,
+      await easybeam.streamPrompt(
+        promptId,
         userId,
         filledVariables,
         messages,
@@ -222,11 +222,11 @@ describe("Easybeam Class Tests", () => {
     });
   });
 
-  describe("getWorkflow", () => {
-    it("should make a POST request and return PortalResponse", async () => {
-      const mockResponse: PortalResponse = {
+  describe("getAgent", () => {
+    it("should make a POST request and return ChatResponse", async () => {
+      const mockResponse: ChatResponse = {
         newMessage: {
-          content: "Workflow response",
+          content: "Agent response",
           role: "AI",
           createdAt: new Date().toISOString(),
           id: "message-id-3",
@@ -238,15 +238,15 @@ describe("Easybeam Class Tests", () => {
         json: jest.fn().mockResolvedValueOnce(mockResponse),
       });
 
-      const response = await easybeam.getWorkflow(
-        workflowId,
+      const response = await easybeam.getAgent(
+        agentId,
         userId,
         filledVariables,
         messages
       );
 
       expect(global.fetch).toHaveBeenCalledWith(
-        expect.stringContaining(`/workflow/${workflowId}`),
+        expect.stringContaining(`/agent/${agentId}`),
         expect.objectContaining({
           method: "POST",
           headers: expect.objectContaining({
@@ -273,14 +273,14 @@ describe("Easybeam Class Tests", () => {
       });
 
       await expect(
-        easybeam.getWorkflow(workflowId, userId, filledVariables, messages)
+        easybeam.getAgent(agentId, userId, filledVariables, messages)
       ).rejects.toThrow(
-        `Failed to process POST request to https://api.easybeam.ai/v1/workflow/${workflowId}`
+        `Failed to process POST request to https://api.easybeam.ai/v1/agent/${agentId}`
       );
     });
   });
 
-  describe("streamWorkflow", () => {
+  describe("streamAgent", () => {
     it("should initiate an SSE connection and handle messages", async () => {
       const onNewResponse = jest.fn();
       const onClose = jest.fn();
@@ -295,8 +295,8 @@ describe("Easybeam Class Tests", () => {
         () => mockEventSourceInstance
       );
 
-      await easybeam.streamWorkflow(
-        workflowId,
+      await easybeam.streamAgent(
+        agentId,
         userId,
         filledVariables,
         messages,
@@ -306,7 +306,7 @@ describe("Easybeam Class Tests", () => {
       );
 
       expect(EventSource).toHaveBeenCalledWith(
-        `${easybeam["baseUrl"]}/workflow/${workflowId}`,
+        `${easybeam["baseUrl"]}/agent/${agentId}`,
         expect.objectContaining({
           headers: expect.any(Object),
           body: JSON.stringify({
@@ -361,27 +361,4 @@ describe("Easybeam Class Tests", () => {
       );
     });
   });
-
-  //   describe("cancelCurrentStream", () => {
-  //     it("should close the current stream if eventSource is defined", () => {
-  //       const mockEventSourceInstance = {
-  //         close: jest.fn(),
-  //       };
-
-  //       easybeam["eventSource"] = mockEventSourceInstance;
-
-  //       easybeam.cancelCurrentStream();
-
-  //       expect(mockEventSourceInstance.close).toHaveBeenCalled();
-  //       expect(easybeam["eventSource"]).toBeUndefined();
-  //     });
-
-  //     it("should do nothing if eventSource is undefined", () => {
-  //       easybeam["eventSource"] = undefined;
-
-  //       easybeam.cancelCurrentStream();
-
-  //       expect(easybeam["eventSource"]).toBeUndefined();
-  //     });
-  //   });
 });
